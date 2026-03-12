@@ -20,26 +20,39 @@ from flask import render_template
 def home():
     return render_template("index.html")
 
-@app.route("/upload", methods=["POST"])
+# @app.route("/upload", methods=['GET','POST'])
+# def upload():
+
+#     if 'file' not in request.files:
+#         return jsonify({"error":"No file uploaded"})
+
+#     file = request.files['file']
+#     filename = file.filename
+
+#     path = os.path.join(UPLOAD_FOLDER, filename)
+#     file.save(path)
+
+#     original, ndvi, ndwi, classification = calculate_indices(path)
+
+#     return jsonify({
+#         "original": f"http://127.0.0.1:5000/results/{original}",
+#         "ndvi": f"http://127.0.0.1:5000/results/{ndvi}",
+#         "ndwi": f"http://127.0.0.1:5000/results/{ndwi}",
+#         "classification": f"http://127.0.0.1:5000/results/{classification}"
+#     })
+
+@app.route('/upload', methods=['GET', 'POST'])
 def upload():
 
-    if 'file' not in request.files:
-        return jsonify({"error":"No file uploaded"})
+    if request.method == 'POST':
+        file = request.files['file']
+        filepath = os.path.join("uploads", file.filename)
+        file.save(filepath)
 
-    file = request.files['file']
-    filename = file.filename
+        # process NDVI here
+        return "File uploaded"
 
-    path = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(path)
-
-    original, ndvi, ndwi, classification = calculate_indices(path)
-
-    return jsonify({
-        "original": f"http://127.0.0.1:5000/results/{original}",
-        "ndvi": f"http://127.0.0.1:5000/results/{ndvi}",
-        "ndwi": f"http://127.0.0.1:5000/results/{ndwi}",
-        "classification": f"http://127.0.0.1:5000/results/{classification}"
-    })
+    return render_template("index.html")
 
 from flask import send_from_directory
 
